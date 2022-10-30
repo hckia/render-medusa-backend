@@ -26,7 +26,7 @@ try {
 const ADMIN_CORS = process.env.ADMIN_CORS || "http://localhost:7000,http://localhost:7001";
 
 // CORS to avoid issues when consuming Medusa from a client
-const STORE_CORS = process.env.STORE_CORS || "http://localhost:8000";
+const STORE_CORS = process.env.STORE_CORS || "http://localhost:3000";
 
 // Database URL (here we use a local database called medusa-development)
 const DATABASE_URL =
@@ -52,18 +52,29 @@ const plugins = [
   //     webhook_secret: STRIPE_WEBHOOK_SECRET,
   //   },
   // },
+  {
+    resolve: `medusa-file-s3`,
+    options: {
+        s3_url: process.env.S3_URL,
+        bucket: process.env.S3_BUCKET,
+        region: process.env.S3_REGION,
+        access_key_id: process.env.S3_ACCESS_KEY_ID,
+        secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
+    },
+  },
 ];
 
 module.exports = {
   projectConfig: {
-    // redis_url: REDIS_URL,
+    redis_url: REDIS_URL,
     // For more production-like environment install PostgresQL
-    // database_url: DATABASE_URL,
-    // database_type: "postgres",
-    database_database: "./medusa-db.sql",
-    database_type: "sqlite",
+    database_url: DATABASE_URL,
+    database_type: "postgres",
+    //database_database: "./medusa-db.sql",
+    //database_type: "sqlite",
     store_cors: STORE_CORS,
     admin_cors: ADMIN_CORS,
+    database_extra: { ssl: { rejectUnauthorized: false } }
   },
   plugins,
 };
